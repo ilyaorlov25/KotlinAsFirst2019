@@ -138,6 +138,5 @@ fun numberRevert(number: Int): Int {
     val firstDigit = number % 10
     val secondDigit = (number / 10) % 10
     val thirdDigit = number / 100
-
     return firstDigit*100 + secondDigit*10 + thirdDigit
 }
