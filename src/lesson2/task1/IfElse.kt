@@ -3,7 +3,10 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
+import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 /**
@@ -63,7 +66,15 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String {
+    val lastDigit = age % 10
+
+    return when {
+        lastDigit == 1 && age % 100 != 11 -> "$age год"
+        lastDigit in 2..4 && age % 100 !in 12..14 -> "$age года"
+        else -> "$age лет"
+    }
+}
 
 /**
  * Простая
@@ -76,7 +87,18 @@ fun timeForHalfWay(
     t1: Double, v1: Double,
     t2: Double, v2: Double,
     t3: Double, v3: Double
-): Double = TODO()
+): Double {
+    val s1 = v1 * t1
+    val s2 = v2 * t2
+    val s3 = v3 * t3
+    val halfS = (s1 + s2 + s3) / 2
+
+    return when {
+        halfS < s1 -> halfS / v1
+        halfS in s1..(s1 + s2) -> t1 + (halfS - s1) / v2
+        else -> t1 + t2 + (halfS - s1 - s2) / v3
+    }
+}
 
 /**
  * Простая
@@ -91,7 +113,21 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int = TODO()
+): Int {
+    val check1: Boolean = (kingX == rookX1 || kingY == rookY1)
+    val check2: Boolean = (kingX == rookX2 || kingY == rookY2)
+
+    val isChecked = (check1 || check2)
+    val only1 = (check1 && !check2)
+    val only2 = (!check1 && check2)
+
+    return when {
+        !isChecked -> 0
+        only1 -> 1
+        only2 -> 2
+        else -> 3
+    }
+}
 
 /**
  * Простая
@@ -107,7 +143,21 @@ fun rookOrBishopThreatens(
     kingX: Int, kingY: Int,
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
-): Int = TODO()
+): Int {
+    val checkRook: Boolean = (kingX == rookX || kingY == rookY)
+    val checkBishop: Boolean = (abs(kingX - bishopX) == abs(kingY - bishopY))
+
+    val isChecked = (checkRook || checkBishop)
+    val onlyRook = (checkRook && !checkBishop)
+    val onlyBishop = (!checkRook && checkBishop)
+
+    return when {
+        !isChecked -> 0
+        onlyRook -> 1
+        onlyBishop -> 2
+        else -> 3
+    }
+}
 
 /**
  * Простая
@@ -117,7 +167,37 @@ fun rookOrBishopThreatens(
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+fun triangleKind(a: Double, b: Double, c: Double): Int {
+    val exist: Boolean = (a < b + c && b < a + c && c < a + b)
+    val maxSide = maxOf(a, b, c)
+
+    val min1: Double
+    val min2: Double
+    when {
+        a == maxSide -> {
+            min1 = b
+            min2 = c
+        }
+        b == maxSide -> {
+            min1 = a
+            min2 = c
+        }
+        else -> {
+            min1 = a
+            min2 = b
+        }
+    }
+
+    val right = (sqr(maxSide) == sqr(min1) + sqr(min2))
+    val acute = (sqr(maxSide) < sqr(min1) + sqr(min2))
+
+    return when {
+        !exist -> (-1)
+        acute -> 0
+        right -> 1
+        else -> 2
+    }
+}
 
 /**
  * Средняя
@@ -127,4 +207,12 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    val minBD = min(b, d)
+    val maxAC = max(a, c)
+
+    return when {
+        (c > b || a > d) -> (-1)
+        else -> (minBD - maxAC)
+    }
+}
