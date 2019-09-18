@@ -75,7 +75,7 @@ fun digitNumber(n: Int): Int {
     do {
         count++
         min /= 10
-    } while (min > 0)
+    } while (abs(min) > 0)
 
     return count
 }
