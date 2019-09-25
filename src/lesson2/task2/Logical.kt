@@ -37,7 +37,7 @@ fun isNumberHappy(number: Int): Boolean {
  * Считать, что ферзи не могут загораживать друг друга.
  */
 fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
-    val vertOrHor = (x1 == x2 || y1 == y2) //Проверяем, угрожают ли по вертикали либо по горизонтали
+    val vertOrHor = x1 == x2 || y1 == y2 //Проверяем, угрожают ли по вертикали либо по горизонтали
     val diag = abs(x1 - x2) == abs(y1 - y2) // Проверяем, угрожают ли по диагонали
 
     return (diag || vertOrHor)
@@ -57,7 +57,7 @@ fun daysInMonth(month: Int, year: Int): Int {
     return when {
         month == 2 && isLeap -> 29
         month == 2 && !isLeap -> 28
-        (month == 4) || (month == 6) || (month == 9) || (month == 11) -> 30
+        month == 4 || month == 6 || month == 9 || month == 11 -> 30
         else -> 31
     }
 }
@@ -72,20 +72,8 @@ fun daysInMonth(month: Int, year: Int): Int {
 fun circleInside(
     x1: Double, y1: Double, r1: Double,
     x2: Double, y2: Double, r2: Double
-): Boolean {
-    //Находим координаты крайних точек 1-й окружности
-    val left1 = x1 - r1
-    val right1 = x1 + r1
-    val up1 = y1 + r1
-    val down1 = y1 - r1
-    //Находим расстояние от крайних точек 1-й окружности до центра 2-й
-    val distLeft = sqrt(sqr(left1 - x2) + sqr(y1 - y2))
-    val distRight = sqrt(sqr(right1 - x2) + sqr(y1 - y2))
-    val distUp = sqrt(sqr(x1 - x2) + sqr(up1 - y2))
-    val distDown = sqrt(sqr(x1 - x2) + sqr(down1 - y2))
-    //Сравниваем полученное расстояние с радиусом 2-й окружности
-    return distDown <= r2 && distLeft <= r2 && distRight <= r2 && distUp <= r2
-}
+): Boolean =
+    sqrt(sqr(x1 - x2) + sqr(y1 - y2)) <= r2 - r1
 
 /**
  * Средняя
@@ -96,11 +84,7 @@ fun circleInside(
  * кирпич 4 х 4 х 4 пройдёт через отверстие 4 х 4.
  * Вернуть true, если кирпич пройдёт
  */
-fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
-    return when {
-        (a <= r) && (b <= s || c <= s) -> true
-        (b <= r) && (a <= s || c <= s) -> true
-        (c <= r) && (a <= s || b <= s) -> true
-        else -> false
-    }
-}
+fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean =
+    (a <= r) && (b <= s || c <= s) ||
+            (b <= r) && (a <= s || c <= s) ||
+            (c <= r) && (a <= s || b <= s)

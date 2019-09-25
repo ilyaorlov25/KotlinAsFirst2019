@@ -114,12 +114,12 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int {
-    val check1: Boolean = (kingX == rookX1 || kingY == rookY1)
-    val check2: Boolean = (kingX == rookX2 || kingY == rookY2)
+    val check1 = kingX == rookX1 || kingY == rookY1
+    val check2 = kingX == rookX2 || kingY == rookY2
 
-    val isChecked = (check1 || check2)
-    val only1 = (check1 && !check2)
-    val only2 = (!check1 && check2)
+    val isChecked = check1 || check2
+    val only1 = check1 && !check2
+    val only2 = !check1 && check2
 
     return when {
         !isChecked -> 0
@@ -144,12 +144,12 @@ fun rookOrBishopThreatens(
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
 ): Int {
-    val checkRook: Boolean = (kingX == rookX || kingY == rookY)
-    val checkBishop: Boolean = (abs(kingX - bishopX) == abs(kingY - bishopY))
+    val checkRook = kingX == rookX || kingY == rookY
+    val checkBishop = abs(kingX - bishopX) == abs(kingY - bishopY)
 
-    val isChecked = (checkRook || checkBishop)
-    val onlyRook = (checkRook && !checkBishop)
-    val onlyBishop = (!checkRook && checkBishop)
+    val isChecked = checkRook || checkBishop
+    val onlyRook = checkRook && !checkBishop
+    val onlyBishop = !checkRook && checkBishop
 
     return when {
         !isChecked -> 0
@@ -168,7 +168,7 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val exist: Boolean = (a < b + c && b < a + c && c < a + b)
+    val exist = a < b + c && b < a + c && c < a + b
     val maxSide = maxOf(a, b, c)
 
     val min1: Double

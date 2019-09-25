@@ -71,7 +71,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
 fun digitNumber(n: Int): Int {
     var count = 0
     var min = n
-    //Вводил отдельную переменную для цикла, т.к. IDEA не разрешала изменять n
+
     do {
         count++
         min /= 10
@@ -87,10 +87,6 @@ fun digitNumber(n: Int): Int {
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
 fun fib(n: Int): Int {
-    /* Рекурсией получилось решить в одну строчку, но тесты проходили минуту
-    if (n < 3) 1 else fib(n - 2) + fib(n - 1)
-     */
-
     if (n < 3) return 1
 
     var answer = 0
@@ -174,9 +170,7 @@ fun isCoPrime(m: Int, n: Int): Boolean {
 fun squareBetweenExists(m: Int, n: Int): Boolean {
     val rootM = sqrt(m.toDouble()).toInt()
     val rootN = sqrt(n.toDouble()).toInt()
-    for (i in rootM..rootN) if (sqr(i) in m..n) return true
-
-    return false
+    return rootM < rootN || sqr(rootM) == m || sqr(rootN) == n
 }
 
 /**
@@ -218,20 +212,15 @@ fun collatzSteps(x: Int): Int {
  * Использовать kotlin.math.sin и другие стандартные реализации функции синуса в этой задаче запрещается.
  */
 fun sin(x: Double, eps: Double): Double {
-    var n = 1
-    var x1 = x
-    var pow = 2
-    var answer = 0.0
-    //Сокращаем Х на количество полных оборотов
+    val n = 1
+    var x1 = abs(x)
+
     if (x1 > 2 * PI) x1 %= 2 * PI
 
-    while (x1.pow(n) / factorial(n) >= eps) {
-        answer += (-1.0).pow(pow) * x1.pow(n) / factorial(n)
-        n += 2
-        pow++
-    }
+    val answer = teylorsRow(x1, n, eps)
 
-    return answer
+    return if (x < 0) answer * (-1.0)
+    else answer
 }
 
 /**
@@ -244,20 +233,12 @@ fun sin(x: Double, eps: Double): Double {
  * Использовать kotlin.math.cos и другие стандартные реализации функции косинуса в этой задаче запрещается.
  */
 fun cos(x: Double, eps: Double): Double {
-    var n = 0
-    var x1 = x
-    var pow = 2
-    var answer = 0.0
+    var x1 = abs(x)
+    val n = 0
 
     if (x1 > 2 * PI) x1 %= 2 * PI
 
-    while (x1.pow(n) / factorial(n) >= eps) {
-        answer += (-1.0).pow(pow) * x1.pow(n) / factorial(n)
-        n += 2
-        pow++
-    }
-
-    return answer
+    return teylorsRow(x1, n, eps)
 }
 
 /**
@@ -268,7 +249,7 @@ fun cos(x: Double, eps: Double): Double {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun revert(n: Int): Int {
-    var order = orderOfNumber(n) //Описал отдельной функцией в конце
+    var order = 10.0.pow(digitNumber(n) - 1).toInt()
     var n1 = n
     var lastDigit: Int
     var answer = 0
@@ -338,12 +319,7 @@ fun squareSequenceDigit(n: Int): Int {
         currentPow++
     }
 
-    val power10 = 10.0.pow(counter - n).toInt()
-
-    return if (counter == n) {
-        currentRes % 10
-    } else (currentRes / power10) % 10
-
+    return getSequenceRes(n, counter, currentRes)
 }
 
 /**
@@ -366,6 +342,11 @@ fun fibSequenceDigit(n: Int): Int {
         currentFib++
     }
 
+    return getSequenceRes(n, counter, currentRes)
+}
+
+//Возвращение ответа для последних двух задач
+fun getSequenceRes(n: Int, counter: Int, currentRes: Int): Int {
     val power10 = 10.0.pow(counter - n).toInt()
 
     return if (counter == n) {
@@ -373,17 +354,18 @@ fun fibSequenceDigit(n: Int): Int {
     } else (currentRes / power10) % 10
 }
 
-fun orderOfNumber(n: Int): Int {
-    //Определение порядка числа
-    var order = 1
+//Функция для вычисления синуса и косинуса
+fun teylorsRow(x1: Double, n: Int, eps: Double): Double {
+    var answer = 0.0
+    var pow = 2
     var n1 = n
+    var fact = factorial(n1)
 
-    if (n1 >= 10) {
-        while (n1 >= 10) {
-            order *= 10
-            n1 /= 10
-        }
+    while (x1.pow(n1) / fact >= eps) {
+        answer += (-1.0).pow(pow) * x1.pow(n1) / fact
+        n1 += 2
+        pow++
+        fact = factorial(n1)
     }
-
-    return order
+    return answer
 }
