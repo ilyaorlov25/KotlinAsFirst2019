@@ -117,8 +117,7 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double =
-    sqrt(v.sumByDouble { it * it })
+fun abs(v: List<Double>): Double = sqrt(v.sumByDouble { it * it })
 
 /**
  * Простая
@@ -163,7 +162,7 @@ fun times(a: List<Int>, b: List<Int>): Int =
  * Значение пустого многочлена равно 0 при любом x.
  */
 fun polynom(p: List<Int>, x: Int): Int =
-    p.foldIndexed(0) { i, prevRes, element -> prevRes + element * x.toDouble().pow(i).toInt() }
+    p.mapIndexed { index, _ -> x.toDouble().pow(index).toInt() * p[index] }.sum()
 
 /**
  * Средняя
@@ -210,8 +209,7 @@ fun factorize(n: Int): List<Int> {
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String =
-    factorize(n).joinToString(separator = "*")
+fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*")
 
 /**
  * Средняя
@@ -254,10 +252,9 @@ fun convertToString(n: Int, base: Int): String =
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun decimal(digits: List<Int>, base: Int): Int {
-    val reversed = digits.reversed()
-    return digits.foldIndexed(0) { i, prevRes, _ -> prevRes + reversed[i] * base.toDouble().pow(i).toInt() }
-}
+fun decimal(digits: List<Int>, base: Int): Int =
+    digits.foldRightIndexed(0)
+    { i, element, prevRes -> prevRes + element * base.toDouble().pow(digits.size - 1 - i).toInt() }
 
 /**
  * Сложная
@@ -271,8 +268,7 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int =
-    decimal(str.map { numberFrom36Base(it) }, base)
+fun decimalFromString(str: String, base: Int): Int = decimal(str.map { numberFrom36Base(it) }, base)
 
 /**
  * Сложная
@@ -282,7 +278,23 @@ fun decimalFromString(str: String, base: Int): Int =
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    val romanDigits = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
+    val arabianDigits = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
+    var varN = n
+    var indexOfLesser = 0
+    var result = ""
+    while (varN > 0) {
+        for (i in 0 until romanDigits.size)
+            if (arabianDigits[i] <= varN) {
+                indexOfLesser = i
+                break
+            }
+        result += romanDigits[indexOfLesser]
+        varN -= arabianDigits[indexOfLesser]
+    }
+    return result
+}
 
 /**
  * Очень сложная
