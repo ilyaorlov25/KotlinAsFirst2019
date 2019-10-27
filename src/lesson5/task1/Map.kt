@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import kotlin.math.max
+
 /**
  * Пример
  *
@@ -91,14 +93,8 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *   buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
-fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
-    val result = mutableMapOf<Int, MutableList<String>>()
-    for ((name, grade) in grades) {
-        if (result[grade] == null) result[grade] = mutableListOf(name)
-        else result[grade]?.add(name)
-    }
-    return result
-}
+fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> =
+    grades.toList().groupBy({ it.second }, { it.first })
 
 /**
  * Простая
@@ -110,11 +106,7 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "z", "b" to "sweet")) -> true
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
-fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
-    for ((keyA, _) in a)
-        if (a[keyA] != b[keyA]) return false
-    return true
-}
+fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean = a.keys.all { a[it] == b[it] }
 
 /**
  * Простая
@@ -164,15 +156,10 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> =
  */
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
     val result = mutableMapOf<String, String>()
-    var string: String
     result.putAll(mapB)
     result.putAll(mapA)
-    for ((keyB, valueB) in mapB)
-        for ((keyA, valueA) in mapA)
-            if (keyA == keyB && valueA != valueB) {
-                string = result[keyA] + ", " + valueB
-                result[keyA] = string
-            }
+    for ((keyA, valueA) in mapA)
+        if (keyA in mapB && valueA != mapB[keyA]) result[keyA] += ", " + mapB[keyA]
 
     return result
 }
@@ -215,15 +202,16 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
+    val emptyString = emptyList<Char>().toString()
     var min = Double.MAX_VALUE
-    var result = ""
+    var result = emptyString
     for ((key, value) in stuff)
         if (value.first == kind && value.second < min) {
             result = key
             min = value.second
         }
 
-    return if (result != "") result else null
+    return if (result != emptyString) result else null
 }
 
 /**
@@ -236,9 +224,10 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    for (char in word.toLowerCase())
-        if (char !in chars.toString().toLowerCase()) return false
-    return true
+    chars.map { it.toLowerCase() }
+    val setOfChars = chars.toSet()
+    val setOfWord = word.toLowerCase().toSet()
+    return setOfWord.all { it in setOfChars }
 }
 
 /**
@@ -372,4 +361,43 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    //Для поиска идей решения посмотрел это видео: https://www.youtube.com/watch?v=HtrgxH3feME
+    val numOfTreasures = treasures.size
+    val result = mutableSetOf<String>()
+    val masses = mutableListOf<Int>()
+    val prices = mutableListOf<Int>()
+    val names = mutableListOf<String>()
+    val mainArray = Array(numOfTreasures + 1) { Array(capacity + 1) { 0 } }
+
+    for ((key, value) in treasures) {
+        masses.add(value.first)
+        prices.add(value.second)
+        names.add(key)
+    }
+
+    for (currNum in 1..numOfTreasures)
+        for (currCap in 1..capacity) {
+            if (currCap < masses[currNum - 1]) mainArray[currNum][currCap] = mainArray[currNum - 1][currCap]
+            else mainArray[currNum][currCap] =
+                max(
+                    mainArray[currNum - 1][currCap],
+                    prices[currNum - 1] + mainArray[currNum - 1][currCap - masses[currNum - 1]]
+                )
+        }
+
+    var currCap = capacity
+    var currNum = numOfTreasures
+    while (currNum > 0) {
+        if (mainArray[currNum][currCap] == mainArray[currNum - 1][currCap]) {
+            currNum -= 1
+        } else {
+            result.add(names[currNum - 1])
+            currCap -= masses[currNum - 1]
+            currNum -= 1
+        }
+    }
+
+    return result
+
+}
