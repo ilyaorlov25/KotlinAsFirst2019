@@ -2,6 +2,7 @@
 
 package lesson5.task1
 
+import lesson4.task1.mean
 import kotlin.math.max
 
 /**
@@ -134,8 +135,7 @@ fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>): Unit {
  * В выходном списке не должно быть повторяюихся элементов,
  * т. е. whoAreInBoth(listOf("Марат", "Семён, "Марат"), listOf("Марат", "Марат")) == listOf("Марат")
  */
-fun whoAreInBoth(a: List<String>, b: List<String>): List<String> =
-    a.toSet().intersect(b.toSet()).toList()
+fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().intersect(b).toList()
 
 /**
  * Средняя
@@ -175,15 +175,8 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val result = mutableMapOf<String, Double>()
-    val mapOfNumber = mutableMapOf<String, Int>()
-    for ((stock, price) in stockPrices) {
-        result[stock] = result.getOrDefault(stock, 0.0) + price
-        mapOfNumber[stock] = mapOfNumber.getOrDefault(stock, 0) + 1
-    }
-    for ((key, value) in mapOfNumber)
-        result[key] = result.getOrDefault(key, 0.0) / value
-    return result
+    val grouped = stockPrices.groupBy({ it.first }, { it.second })
+    return grouped.mapValues { mean(it.value) }
 }
 
 /**
@@ -202,16 +195,8 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    val emptyString = emptyList<Char>().toString()
-    var min = Double.POSITIVE_INFINITY
-    var result = emptyString
-    for ((key, value) in stuff)
-        if (value.first == kind && value.second < min) {
-            result = key
-            min = value.second
-        }
-
-    return if (result != emptyString) result else null
+    val filtered = stuff.filter { it.value.first == kind }
+    return filtered.minBy { it.value.second }?.key
 }
 
 /**
@@ -243,10 +228,8 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
 fun extractRepeats(list: List<String>): Map<String, Int> {
-    val result = mutableMapOf<String, Int>()
-    for (elements in list)
-        result[elements] = result.getOrDefault(elements, 0) + 1
-    return result.filterValues { it > 1 }
+    val grouped = list.groupBy { it }.mapValues { it.value.size }
+    return grouped.filterValues { it > 1 }
 }
 
 /**
@@ -289,26 +272,7 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
-    val result = mutableMapOf<String, MutableSet<String>>()
-    var changing = true
-    var check: MutableMap<String, MutableSet<String>>
-    while (changing) {
-        check = result
-        for ((human, theseFriends) in friends) {
-            if (result[human] == null) result[human] = theseFriends.toMutableSet()
-            else result[human]?.addAll(theseFriends)
-
-            for (nameOfFriend in theseFriends)
-                if (friends.containsKey(nameOfFriend)) result[human]?.addAll(friends.getValue(nameOfFriend))
-                else result[nameOfFriend] = mutableSetOf()
-        }
-        changing = check != result
-    }
-
-    for ((key, _) in result) result[key]?.remove(key)
-    return result
-}
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
 
 /**
  * Сложная
