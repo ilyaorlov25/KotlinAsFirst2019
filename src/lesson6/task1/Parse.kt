@@ -232,9 +232,9 @@ fun firstDuplicateIndex(str: String): Int {
             result = str.indexOf(splitted[i - 1].first(), startFrom)
             break
         }
-        startFrom += splitted[i - 1].length
+        startFrom += splitted[i - 1].length + 1
     }
-    return if (result == -1) -1 else result
+    return result
 }
 
 /**
@@ -253,7 +253,7 @@ fun mostExpensive(description: String): String {
     var price: Double
     var result = ""
     var max = -1.0
-    val isOkay = description.matches(Regex("""([а-яА-ЯёЁ]+\s\d+(\.\d)?;\s)*[а-яА-ЯёЁ]+\s\d+(\.\d)?"""))
+    val isOkay = description.matches(Regex("""([а-яА-ЯёЁa-zA-z]+\s\d+(\.\d)?;\s)*[а-яА-ЯёЁa-zA-Z]+\s\d+(\.\d)?"""))
     if (!isOkay) return ""
     val splitted = description.split("; ")
     for (product in splitted) {
@@ -282,7 +282,7 @@ fun fromRoman(roman: String): Int {
     val romanDigits = listOf('I', 'V', 'X', 'L', 'C', 'D', 'M')
     val arabianDigits = listOf(1, 5, 10, 50, 100, 500, 1000)
     val isOkay = roman.matches(Regex("""^(M{0,3})(D?C{0,3}|C[DM])(L?X{0,3}|X[LC])(V?I{0,3}|I[VX])$"""))
-    if (!isOkay) return -1
+    if (!isOkay || roman == "") return -1
     var result = 0
     var curr: Int
     var next: Int
