@@ -253,7 +253,7 @@ fun mostExpensive(description: String): String {
     var price: Double
     var result = ""
     var max = -1.0
-    val isOkay = description.matches(Regex("""([а-яА-ЯёЁa-zA-z]+\s\d+(\.\d)?;\s)*[а-яА-ЯёЁa-zA-Z]+\s\d+(\.\d)?"""))
+    val isOkay = description.matches(Regex("""([а-яА-ЯёЁa-zA-z]+\s\d+(\.\d+)?;\s)*[а-яА-ЯёЁa-zA-Z]+\s\d+(\.\d+)?"""))
     if (!isOkay) return ""
     val splitted = description.split("; ")
     for (product in splitted) {
