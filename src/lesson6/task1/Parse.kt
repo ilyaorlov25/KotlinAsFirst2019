@@ -133,12 +133,10 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    var cleared = Regex("""-""").replace(phone, "")
-    cleared = Regex("""\s""").replace(cleared, "")
+    var cleared = Regex("""[\-\s]""").replace(phone, "")
     val isOkay = cleared.matches(Regex("""(\+\d+)?(\(\d+\))?\d+"""))
     if (!isOkay) return ""
-    cleared = Regex("""\(""").replace(cleared, "")
-    cleared = Regex("""\)""").replace(cleared, "")
+    cleared = Regex("""[()]""").replace(cleared, "")
     return cleared
 }
 
@@ -156,17 +154,17 @@ fun bestLongJump(jumps: String): Int {
     val results = jumps.split(" ")
     var currAttempt: Int
     var max = -1
-    return try {
-        for (attempt in results) {
-            if (attempt == "%" || attempt == "-") continue
-            else currAttempt = attempt.toInt()
-            if (currAttempt < 0) return -1
-            if (currAttempt > max) max = currAttempt
+    for (attempt in results) {
+        if (attempt == "%" || attempt == "-") continue
+        else currAttempt = try {
+            attempt.toInt()
+        } catch (e: Exception) {
+            -1
         }
-        max
-    } catch (e: Exception) {
-        -1
+        if (currAttempt < 0) return -1
+        if (currAttempt > max) max = currAttempt
     }
+    return max
 }
 
 /**
@@ -225,16 +223,12 @@ fun plusMinus(expression: String): Int {
  */
 fun firstDuplicateIndex(str: String): Int {
     val splitted = str.split(" ")
-    var startFrom = 0
-    var result = -1
+    var position = 0
     for (i in 1 until splitted.size) {
-        if (splitted[i].toLowerCase() == splitted[i - 1].toLowerCase()) {
-            result = str.indexOf(splitted[i - 1].first(), startFrom)
-            break
-        }
-        startFrom += splitted[i - 1].length + 1
+        if (splitted[i].toLowerCase() == splitted[i - 1].toLowerCase()) return position
+        position += splitted[i - 1].length + 1
     }
-    return result
+    return -1
 }
 
 /**
@@ -249,16 +243,14 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String {
-    var name: String
-    var price: Double
     var result = ""
     var max = -1.0
     val isOkay = "$description; ".matches(Regex("""(.+\s\d+(\.\d+)?;\s)+"""))
     if (!isOkay) return ""
     val splitted = description.split("; ")
     for (product in splitted) {
-        name = product.split(" ")[0]
-        price = product.split(" ")[1].toDouble()
+        val name = product.split(" ")[0]
+        val price = product.split(" ")[1].toDouble()
         if (price > max) {
             result = name
             max = price
