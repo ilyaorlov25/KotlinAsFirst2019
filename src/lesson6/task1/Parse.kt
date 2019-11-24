@@ -133,7 +133,7 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    var cleared = Regex("""[\-\s]""").replace(phone, "")
+    var cleared = Regex("""[-\s]""").replace(phone, "")
     val isOkay = cleared.matches(Regex("""(\+\d+)?(\(\d+\))?\d+"""))
     if (!isOkay) return ""
     cleared = Regex("""[()]""").replace(cleared, "")
@@ -334,4 +334,10 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val isOkay = commands.matches(Regex("""[><+\-\[\]]*""")) // добавить про отсутствие закрывающейся
+    if (!isOkay) throw IllegalArgumentException("Нарушен формат входной строки")
+    val startPos = cells / 2
+    val cleared = " ".replace(commands, "")
+    return emptyList()
+}
