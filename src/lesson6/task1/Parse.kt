@@ -334,10 +334,4 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
-    val isOkay = commands.matches(Regex("""[><+\-\[\]]*""")) // добавить про отсутствие закрывающейся
-    if (!isOkay) throw IllegalArgumentException("Нарушен формат входной строки")
-    val startPos = cells / 2
-    val cleared = " ".replace(commands, "")
-    return emptyList()
-}
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
