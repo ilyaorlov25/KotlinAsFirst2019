@@ -533,7 +533,8 @@ fun markdownToHtml(inputName: String, outputName: String) {
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val output = File(outputName).bufferedWriter()
     val digitsRhv = rhv.toString()
-    val maxLength = digitNumber(lhv * digitsRhv[0].toString().toInt()) + digitNumber(rhv)
+    var maxLength = digitNumber(lhv * digitsRhv[0].toString().toInt()) + digitNumber(rhv)
+    if (maxLength == digitNumber(lhv * rhv)) maxLength++
     /* более наглядно было бы: digitNumber(lhv * digitsRhv[0].toString().toInt()) + 1 + digitNumber(rhv) - 1
     То есть считается сумма кол-ва цифр в произведении первого числа на первую цифру второго числа, знака "+" и кол-ва
     цифр во втором числе без одного (вывел это на примере прямых расчётов на бумажке)
