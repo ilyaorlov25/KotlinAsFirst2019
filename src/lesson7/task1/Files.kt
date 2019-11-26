@@ -60,10 +60,11 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
     val result = mutableMapOf<String, Int>()
     var lower: String
-    for (i in substrings) result[i] = 0
+    val substringsNew = substrings.toSet().toList()
+    for (i in substringsNew) result[i] = 0
     for (line in File(inputName).readLines()) {
         lower = line.toLowerCase()
-        for (substring in substrings) {
+        for (substring in substringsNew) {
             if (lower.contains(Regex(substring.toLowerCase())))
                 for (i in 0 until lower.length - substring.length + 1) {
                     if (lower.substring(i, i + substring.length) == substring.toLowerCase()) result[substring] =
@@ -175,8 +176,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
     val listOfTrimmed = mutableListOf<String>()
     var longest = 0
     for (line in File(inputName).readLines()) {
-        Regex("""\s+""").replace(line, " ")
-        listOfTrimmed.add(line.trim())
+        listOfTrimmed.add(Regex("""\s+""").replace(line, " ").trim())
         if (line.trim().length > longest) longest = line.trim().length
     }
     for (line in listOfTrimmed) {
@@ -281,17 +281,14 @@ fun top20Words(inputName: String): Map<String, Int> {
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
     val output = File(outputName).bufferedWriter()
     val loweredDict = dictionary.map { it.key.toLowerCase() to it.value.toLowerCase() }.toMap()
-    for (line in File(inputName).readLines()) {
-        for (char in line) {
-            val lower = char.toLowerCase()
-            if (loweredDict.containsKey(lower)) {
-                if (char.isUpperCase()) output.write(loweredDict.getValue(lower).capitalize())
-                else output.write(loweredDict.getValue(lower))
-            } else {
-                output.write(char.toString())
-            }
+    for (char in File(inputName).readText()) {
+        val lower = char.toLowerCase()
+        if (loweredDict.containsKey(lower)) {
+            if (char.isUpperCase()) output.write(loweredDict.getValue(lower).capitalize())
+            else output.write(loweredDict.getValue(lower))
+        } else {
+            output.write(char.toString())
         }
-        output.newLine()
     }
     output.close()
 }
@@ -335,7 +332,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
                 result.add(word)
                 check.clear()
                 check.add(lower)
-            } else if (length == max && lower !in check) {
+            } else if (length == max) {
                 result.add(word)
             }
         }
@@ -536,8 +533,11 @@ fun markdownToHtml(inputName: String, outputName: String) {
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     val output = File(outputName).bufferedWriter()
     val digitsRhv = rhv.toString()
-    val maxLength = digitNumber(lhv) + digitNumber(rhv)
-
+    val maxLength = digitNumber(lhv * digitsRhv[0].toString().toInt()) + digitNumber(rhv)
+    /* более наглядно было бы: digitNumber(lhv * digitsRhv[0].toString().toInt()) + 1 + digitNumber(rhv) - 1
+    То есть считается сумма кол-ва цифр в произведении первого числа на первую цифру второго числа, знака "+" и кол-ва
+    цифр во втором числе без одного (вывел это на примере прямых расчётов на бумажке)
+     */
     for (i in 0 until maxLength - digitNumber(lhv)) output.write(" ")
     output.write("$lhv")
     output.newLine()
