@@ -249,6 +249,6 @@ fun minContainingCircle(vararg points: Point): Circle = TODO()
 //Нахождение угла наколна прямой по двум её точкам
 fun angleByPoints(a: Point, b: Point): Double {
     val angle = atan((a.y - b.y) / (a.x - b.x))
-    return if (angle >= 0) angle else PI + angle
+    return (angle + PI) % PI
 }
 
