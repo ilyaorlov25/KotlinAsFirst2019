@@ -5,8 +5,6 @@ package lesson7.task1
 import lesson3.task1.digitNumber
 import java.io.File
 import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * Пример
@@ -227,7 +225,6 @@ fun apportion(difference: Int, spaces: Int): List<Int> {
  */
 fun top20Words(inputName: String): Map<String, Int> {
     val preResult = mutableMapOf<String, Int>()
-    val result = mutableMapOf<String, Int>()
     for (line in File(inputName).readLines()) {
         val splitted = line.split(Regex("""[^a-zA-Zа-яА-ЯёЁ]"""))
         for (word in splitted) {
@@ -236,11 +233,8 @@ fun top20Words(inputName: String): Map<String, Int> {
             preResult[lowered] = preResult.getOrDefault(lowered, 0) + 1
         }
     }
-    val listOfSorted = preResult.keys.sortedByDescending { preResult[it] }
-    for (i in 0..19) {
-        if (i < listOfSorted.size) result[listOfSorted[i]] = preResult.getOrDefault(listOfSorted[i], 0)
-    }
-    return result
+    val listOfSorted = preResult.toList().sortedByDescending { it.second }
+    return listOfSorted.take(20).toMap()
 }
 
 /**
@@ -320,7 +314,6 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     val output = File(outputName).bufferedWriter()
     val result = mutableListOf<String>()
-    val check = mutableListOf<String>()
     var max = 0
     for (word in File(inputName).readLines()) {
         val lower = word.toLowerCase()
@@ -330,8 +323,6 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
                 max = lower.length
                 result.clear()
                 result.add(word)
-                check.clear()
-                check.add(lower)
             } else if (length == max) {
                 result.add(word)
             }
@@ -539,16 +530,16 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     То есть считается сумма кол-ва цифр в произведении первого числа на первую цифру второго числа, знака "+" и кол-ва
     цифр во втором числе без одного (вывел это на примере прямых расчётов на бумажке)
      */
-    for (i in 0 until maxLength - digitNumber(lhv)) output.write(" ")
+    repeat(maxLength - digitNumber(lhv)) { output.write(" ") }
     output.write("$lhv")
     output.newLine()
 
     output.write("*")
-    for (i in 0 until maxLength - digitNumber(rhv) - 1) output.write(" ")
+    repeat(maxLength - digitNumber(rhv) - 1) { output.write(" ") }
     output.write("$rhv")
     output.newLine()
 
-    for (i in 0 until maxLength) output.write("-")
+    repeat(maxLength) { output.write("-") }
     output.newLine()
 
     for ((counter, i) in (digitsRhv.length - 1 downTo 0).withIndex()) {
@@ -562,11 +553,11 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
         output.newLine()
     }
 
-    for (i in 0 until maxLength) output.write("-")
+    repeat(maxLength) { output.write("-") }
     output.newLine()
 
     val result = "${lhv * rhv}"
-    for (i in 0 until maxLength - result.length) output.write(" ")
+    repeat(maxLength - result.length) { output.write(" ") }
     output.write(result)
     output.close()
 }
